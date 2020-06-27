@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "656288555849",
+    "firebase_url": "https://nomercy-2edf0.firebaseio.com",
+    "project_id": "nomercy-2edf0",
+    "storage_bucket": "nomercy-2edf0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656288555849:android:422c9c784d43f20dbd3098",
+        "android_client_info": {
+          "package_name": "com.example.NoMercySender"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656288555849-2g4jahkm8h06p858udr1kfhtl5u0mqh1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeMDNn7FnHY3bboqKmD0g1IehRd5Siypg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656288555849-2g4jahkm8h06p858udr1kfhtl5u0mqh1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
