@@ -25,6 +25,9 @@ dependencies:
     sdk: flutter
     
   cloud_firestore: ^0.13.7
+  geolocator: ^5.3.2+2
+  # workmanager: ^0.2.2 # For periodic background tasks
+  foreground_service: ^2.0.1+1
 
 
   # The following adds the Cupertino Icons font to your application.

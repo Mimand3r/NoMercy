@@ -1,4 +1,4 @@
-import 'package:NoMercySender/firebase_worker.dart';
+import 'package:NoMercySender/foreground_manager.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -26,13 +26,33 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future _testSendKlicked() async {
-    setState(() => isLoading = true);
-    await FirebaseWorker.testWriteToFirebase(DateTime.now().toIso8601String());
-    setState(() => isLoading = false);
+  @override
+  void initState() {
+    super.initState();
+    ForegroundServiceManager.instance.isRunningStream.listen((newValue) {
+      setState(() {
+        didInit = true;
+        isRunning = newValue;
+      });
+    });
   }
 
-  var isLoading = false;
+  _toggleService() {
+    if (ForegroundServiceManager.instance.isRunning) {
+      ForegroundServiceManager.instance.stopForegroundService();
+    } else {
+      ForegroundServiceManager.instance.startForegroundService();
+    }
+    setState(() {});
+  }
+
+  _terminate() {
+    ForegroundServiceManager.instance.stopForegroundService();
+    setState(() {});
+  }
+
+  var didInit = false;
+  var isRunning = false;
 
   @override
   Widget build(BuildContext context) {
@@ -47,22 +67,28 @@ class _HomePageState extends State<HomePage> {
           SafeArea(
               child: Container(
             width: double.infinity,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Builder(
-                  builder: (context) {
-                    if (!isLoading)
-                      return RaisedButton(
-                        onPressed: _testSendKlicked,
-                        child: Text("TestSend To Firebase"),
-                      );
-                    return CircularProgressIndicator();
-                  },
-                )
-              ],
-            ),
+            child: Builder(builder: (context) {
+              if (!didInit) return Center(child: CircularProgressIndicator());
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text("Sender"),
+                  Builder(builder: (c) {
+                    if (isRunning) return Text("ist scharf");
+                    return Text("deaktiviert");
+                  }),
+                  RaisedButton(
+                    onPressed: _toggleService,
+                    child: Text("Aktivieren/Deaktivieren"),
+                  ),
+                  RaisedButton(
+                    onPressed: _terminate,
+                    child: Text("Terminieren"),
+                  ),
+                ],
+              );
+            }),
           ))
         ],
       ),
