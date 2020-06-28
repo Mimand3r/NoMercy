@@ -6,42 +6,31 @@ class GPSManager {
   static GPSManager _instance = GPSManager._internal();
   static GPSManager get instance => _instance;
 
-  // GPSManager.initWithIntervals(Duration intervall) {
-  //   if (instance != null) throw Exception("GPS Manager already exists");
-  //   instance = this;
-  //   this.intervall = intervall;
-  //   _sendLocationDataInIntervals();
-  // }
-
-  bool active = true;
   var locator = Geolocator();
+  Position lastPosition;
 
-  // Future startLocationSending(Duration intervall) async {
-  //   print(
-  //       "Sending GPS Data eingerichtet - Intervall: ${intervall.inSeconds} sekunden");
-  //   // var permission = await locator.checkGeolocationPermissionStatus();
-  //   // print(permission);
-  //   // locator
-  //   //     .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-  //   //     .then((value) {
-  //   //   print("ready");
-  //   // });
-  //   // // print(positionData);
-  //   while (active) {
-  //     await Future.delayed(new Duration(seconds: 1));
-  //     print("inertvall passed, ${DateTime.now().toIso8601String()}");
-  //     var positionData = await locator.getCurrentPosition(
-  //         desiredAccuracy: LocationAccuracy.best);
-  //     await FirebaseGPSWriter.sendGPSDataToFirebase(positionData);
-  //   }
-  // }
+  // Configs
+  final int updateIntervallWhenStanding =
+      60; // steht das Fahrzeug so wird nur einmal pro minute gesendet
+  final int lowestUpdateIntervall =
+      10; // fährt das Fahrzeug so wird maximal alle 10 sekunden gesendet
 
-  Future sendCurrentLocationToFirebase() async {
-    await Future.delayed(new Duration(seconds: 1));
-    print("inertvall passed, ${DateTime.now().toIso8601String()}");
+  Future checkAndMaybeSendLocationToFirebase() async {
     var positionData = await locator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
-    print(positionData);
-    await FirebaseGPSWriter.sendGPSDataToFirebase(positionData);
+    if (_checkIfSendingIsNescessarry(positionData)) {
+      await FirebaseGPSWriter.sendGPSDataToFirebase(positionData);
+      lastPosition = positionData;
+    }
+  }
+
+  bool _checkIfSendingIsNescessarry(Position newPosition) {
+    if (lastPosition == null) return true;
+    var passedTimeSeconds =
+        newPosition.timestamp.difference(lastPosition.timestamp).inSeconds;
+    if (passedTimeSeconds < lowestUpdateIntervall) return false;
+    if (passedTimeSeconds > updateIntervallWhenStanding) return true;
+
+    // Next: Check for difference in Distance and compare to threshold
   }
 }

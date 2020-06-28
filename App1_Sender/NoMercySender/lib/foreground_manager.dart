@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:NoMercySender/ModuleGPS/gps_manager.dart';
 import 'package:foreground_service/foreground_service.dart';
-import 'package:geolocator/geolocator.dart';
 
-import 'ModuleGPS/firebase_gps_writer.dart';
-
+// Needs to be global
 void fgFunction() {
   if (!ForegroundService.isIsolateCommunicationSetup)
     ForegroundService.setupIsolateCommunication((_) {});
@@ -12,7 +10,6 @@ void fgFunction() {
   ForegroundService.sendToPort("");
 }
 
-var locator = Geolocator();
 
 class ForegroundServiceManager {
   ForegroundServiceManager._internal() {
@@ -60,9 +57,8 @@ class ForegroundServiceManager {
   }
 
   Future _foregroundServiceWantsInvocation() async {
-    // if (!await ForegroundService.isBackgroundIsolateSetupComplete()) return;
     print("angekommen");
-    await GPSManager.instance.sendCurrentLocationToFirebase();
+    await GPSManager.instance.checkAndMaybeSendLocationToFirebase();
   }
 
   Future stopForegroundService() async {
